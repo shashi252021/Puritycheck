@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PurityScan Pro - Your Ingredient Analyzer</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Poppins Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #121212; /* Dark background */
+            color: #FFFFFF; /* White text */
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Color Palette */
+        .accent-color { color: #10B981; } /* Green accent */
+        .accent-bg { background-color: #10B981; }
+        .accent-gradient { background-image: linear-gradient(to right, #10B981, #0d9469); }
+        .secondary-bg { background-color: #1E1E1E; } /* Slightly lighter dark for sections */
+        .text-light-gray { color: #A0A0A0; } /* Lighter gray for secondary text */
+
+        /* Hero Section Background */
+        .hero-section {
+            background: linear-gradient(rgba(18, 18, 18, 0.85), rgba(18, 18, 18, 0.85)), url('https://images.unsplash.com/photo-1543886583-00d9226d7f95?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'); /* Previous image of various spices/ingredients */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* Card Hover Effect */
+        .feature-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background-color: #1E1E1E; /* Secondary background for cards */
+        }
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(16, 185, 129, 0.2), 0 10px 10px -5px rgba(16, 185, 129, 0.1);
+        }
+
+        /* Scroll Animation Setup */
+        .scroll-target {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .scroll-target.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Added Animation for Hero Elements */
+        .hero-title {
+            animation: fadeInDown 1s ease-out;
+        }
+        .hero-subtitle {
+            animation: fadeInUp 1s ease-out 0.5s;
+            animation-fill-mode: backwards;
+        }
+        .hero-button {
+            animation: fadeInUp 1s ease-out 1s;
+            animation-fill-mode: backwards;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Button Styles */
+        .btn-main {
+            background-image: linear-gradient(to right, #10B981, #0d9469);
+            color: white;
+            font-weight: bold;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px; /* Full rounded */
+            transition: all 0.3s ease;
+        }
+        .btn-main:hover {
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3), 0 4px 6px -2px rgba(16, 185, 129, 0.1);
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background-color: #374151; /* Darker gray */
+            color: white;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background-color: #4B5563; /* Lighter gray on hover */
+        }
+
+        .btn-danger {
+            background-color: #E74C3C; /* Red */
+            color: white;
+            font-weight: bold;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease;
+        }
+        .btn-danger:hover {
+            background-color: #C0392B; /* Darker red */
+        }
+
+        /* Result Specific Styles */
+        .result-safe {
+            background-color: #2ECC71; /* Green */
+            color: white;
+        }
+        .result-unsafe {
+            background-color: #E74C3C; /* Red */
+            color: white;
+        }
+        .result-no-text {
+            background-color: #F39C12; /* Orange */
+            color: white;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #10B981;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #2D2D2D; /* Darker track */
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #777;
+        }
+
+        /* Drag and Drop styles */
+        .drop-area {
+            border: 2px dashed #4A4A4A; /* Darker dashed border */
+            background-color: #282828; /* Darker background */
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .drop-area.highlight {
+            border-color: #10B981; /* Accent color on highlight */
+            background-color: #2F3F3A; /* Slightly lighter accent background */
+        }
+
+        /* Modal styles */
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.7); /* Darker overlay */
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: #1E1E1E; /* Secondary background for modal */
+            color: #FFFFFF;
+            z-index: 1001;
+        }
+        .modal-close-btn {
+            background-color: #374151;
+            color: white;
+        }
+        .modal-close-btn:hover {
+            background-color: #4B5563;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header -->
+    <header class="py-4 px-6 md:px-12 secondary-bg sticky top-0 z-50 shadow-lg backdrop-blur-md bg-opacity-75">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#" class="flex items-center gap-3">
+                <i class="fas fa-flask text-3xl accent-color"></i> <!-- Changed icon -->
+                <h1 class="text-2xl font-bold">PurityScan Pro</h1>
+            </a>
+            
+            <!-- Right-aligned container for nav and buttons -->
+            <div class="flex items-center gap-8">
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex items-center gap-8">
+                    <a href="#how-it-works" class="text-light-gray hover:text-white transition-colors duration-300">How It Works</a>
+                    <a href="#features" class="text-light-gray hover:text-white transition-colors duration-300">Features</a>
+                    <a href="#analysis-section" class="text-light-gray hover:text-white transition-colors duration-300">Start Scan</a>
+                    <a href="#disclaimer" class="text-light-gray hover:text-white transition-colors duration-300">Disclaimer</a>
+                </nav>
+
+                <button id="aboutButton" class="btn-secondary hidden md:inline-block">
+                    About
+                </button>
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-button" class="md:hidden text-2xl p-2 text-white">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden mt-4">
+            <nav class="flex flex-col gap-4 p-4">
+                <a href="#how-it-works" class="text-light-gray hover:text-white transition-colors py-2 text-center">How It Works</a>
+                <a href="#features" class="text-light-gray hover:text-white transition-colors py-2 text-center">Features</a>
+                <a href="#analysis-section" class="text-light-gray hover:text-white transition-colors py-2 text-center">Start Scan</a>
+                <a href="#disclaimer" class="text-light-gray hover:text-white transition-colors py-2 text-center">Disclaimer</a>
+                <button id="mobileAboutButton" class="btn-secondary mt-2 text-center">
+                    About
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section text-center py-20 md:py-32 px-6">
+        <div class="container mx-auto">
+            <h2 class="text-4xl md:text-6xl font-bold mb-4 leading-tight hero-title">Scan Labels. Know Your Ingredients.</h2>
+            <p class="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-8 hero-subtitle">
+                Effortlessly identify harmful ingredients in food, cosmetics, and household products. Make informed choices for a healthier life.
+            </p>
+            <a href="#analysis-section" class="btn-main text-lg inline-block transform hover:scale-105 hero-button">
+                Start Scanning Now
+            </a>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-20 px-6">
+        <div class="container mx-auto text-center">
+            <div class="scroll-target">
+                <h3 class="text-3xl font-bold mb-2">How It Works</h3>
+                <p class="text-light-gray mb-12">Simple steps to reveal what's truly in your products.</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-10">
+                <!-- Step 1 -->
+                <div class="feature-card p-8 rounded-xl scroll-target">
+                    <div class="accent-bg w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-camera text-3xl text-white"></i>
+                    </div>
+                    <h4 class="text-2xl font-semibold mb-2">1. Upload Image</h4>
+                    <p class="text-light-gray">Snap a photo of the ingredient list on any product.</p>
+                </div>
+                <!-- Step 2 -->
+                <div class="feature-card p-8 rounded-xl scroll-target" style="transition-delay: 200ms;">
+                    <div class="accent-bg w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-search text-3xl text-white"></i>
+                    </div>
+                    <h4 class="text-2xl font-semibold mb-2">2. AI Analysis</h4>
+                    <p class="text-light-gray">Our AI extracts and cross-references ingredients with a powerful database.</p>
+                </div>
+                <!-- Step 3 -->
+                <div class="feature-card p-8 rounded-xl scroll-target" style="transition-delay: 400ms;">
+                    <div class="accent-bg w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-clipboard-list text-3xl text-white"></i>
+                    </div>
+                    <h4 class="text-2xl font-semibold mb-2">3. Get Insights</h4>
+                    <p class="text-light-gray">Receive instant safety ratings and detailed explanations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 px-6 secondary-bg">
+        <div class="container mx-auto text-center">
+            <div class="scroll-target">
+                <h3 class="text-3xl font-bold mb-12">Key Features</h3>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="feature-card p-6 rounded-lg scroll-target">
+                    <i class="fas fa-microscope text-4xl accent-color mb-4"></i>
+                    <h4 class="text-xl font-bold">Detailed Insights</h4>
+                    <p class="text-light-gray">Understand why an ingredient might be harmful with clear explanations.</p>
+                </div>
+                <!-- Feature 2 -->
+                <div class="feature-card p-6 rounded-lg scroll-target" style="transition-delay: 200ms;">
+                    <i class="fas fa-database text-4xl accent-color mb-4"></i>
+                    <h4 class="text-xl font-bold">Always Up-to-Date</h4>
+                    <p class="text-light-gray">Our database is constantly updated with the latest safety information.</p>
+                </div>
+                <!-- Feature 3 -->
+                <div class="feature-card p-6 rounded-lg scroll-target" style="transition-delay: 400ms;">
+                    <i class="fas fa-search-plus text-4xl accent-color mb-4"></i>
+                    <h4 class="text-xl font-bold">High Accuracy OCR</h4>
+                    <p class="text-light-gray">Advanced optical character recognition for reliable text extraction.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Analysis Section (Core PurityScan Pro App) -->
+    <section id="analysis-section" class="py-20 px-6">
+        <div class="container mx-auto text-center scroll-target">
+            <h3 class="text-3xl font-bold mb-8">Start Your Scan</h3>
+            <div class="flex flex-col lg:flex-row gap-6 bg-secondary-bg p-6 rounded-xl shadow-lg">
+                <!-- Left Panel: Upload and Image Preview -->
+                <div class="lg:w-1/3 p-6 bg-secondary-bg rounded-xl flex flex-col items-center">
+                    <h2 class="text-xl font-semibold text-white mb-4">Upload a Product Label Image</h2>
+
+                    <!-- Drag and Drop Area -->
+                    <div id="dropArea" class="drop-area w-full p-6 text-center rounded-lg cursor-pointer mb-6">
+                        <p class="text-light-gray mb-2">Drag & Drop your image here</p>
+                        <p class="text-light-gray text-sm mb-4">- OR -</p>
+                        <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="previewImage(event)">
+                        <label for="imageInput" class="btn-main text-white px-6 py-3 rounded-xl shadow-md cursor-pointer hover:shadow-lg transition-all duration-300">
+                            Browse Files
+                        </label>
+                    </div>
+
+                    <div class="w-full h-64 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden border border-gray-700 shadow-inner mb-6">
+                        <img id="imagePreview" src="https://placehold.co/250x250/333333/FFFFFF?text=Image+Preview" alt="Image Preview" class="max-w-full max-h-full object-contain rounded-lg">
+                    </div>
+
+                    <button id="clearAllButton" class="btn-danger text-white px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 w-full lg:w-auto">
+                        Clear All
+                    </button>
+                </div>
+
+                <!-- Right Panel: Scan Results and Details -->
+                <div class="lg:w-2/3 p-6 bg-secondary-bg rounded-xl flex flex-col">
+                    <h2 class="text-xl font-semibold text-white mb-4">Scan Results</h2>
+
+                    <!-- Scan Result Message -->
+                    <div id="scanResultMessage" class="p-4 text-center text-lg font-bold rounded-lg shadow-md mb-6 min-h-[60px] flex items-center justify-center bg-gray-700 text-white">
+                        Upload an image to get started!
+                    </div>
+
+                    <!-- Loading Indicator -->
+                    <div id="loadingIndicator" class="hidden flex items-center justify-center gap-3 text-light-gray mb-6">
+                        <div class="loading-spinner"></div>
+                        <span>Processing...</span>
+                    </div>
+
+                    <!-- Harmful Ingredients Section (Collapsible) -->
+                    <div class="flex-grow border border-gray-700 rounded-lg"> <!-- Changed flex-grow to fill remaining space -->
+                        <button class="w-full text-left p-3 bg-gray-800 font-semibold text-white rounded-t-lg flex justify-between items-center" onclick="toggleSection('harmfulIngredientsContent')">
+                            <span>Identified Potentially Harmful Ingredients</span>
+                            <span id="harmfulIngredientsToggleIcon" class="text-xl">+</span>
+                        </button>
+                        <div id="harmfulIngredientsContent" class="hidden custom-scrollbar p-4 overflow-y-auto h-96 lg:h-auto max-h-[calc(100vh-300px)] bg-gray-900"> <!-- Adjusted height/max-height -->
+                            <p class="text-light-gray">No harmful ingredients identified yet.</p>
+                        </div>
+                    </div>
+                    <!-- Removed Raw Text section and Copy Text button -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Disclaimer Section -->
+    <section id="disclaimer" class="py-16 px-6 text-center scroll-target">
+        <div class="container mx-auto max-w-3xl">
+            <i class="fas fa-exclamation-triangle text-yellow-400 text-4xl mb-4"></i>
+            <h3 class="text-2xl font-bold mb-4">Important Disclaimer</h3>
+            <p class="text-light-gray">
+                This tool is for informational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="secondary-bg py-8 text-center text-light-gray">
+        <div class="flex justify-center gap-6">
+            <a href="https://github.com/Venky8249" target="_blank" rel="noopener noreferrer" class="text-light-gray hover:text-white transition-colors duration-300">
+                <i class="fab fa-github text-2xl"></i>
+            </a>
+            <a href="https://www.linkedin.com/in/venkatesh-gummadidala-923419291/?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noopener noreferrer" class="text-light-gray hover:text-white transition-colors duration-300">
+                <i class="fab fa-linkedin text-2xl"></i>
+            </a>
+        </div>
+    </footer>
+
+    <!-- About Modal -->
+    <div id="aboutModal" class="fixed inset-0 flex items-center justify-center modal-overlay hidden">
+        <div class="p-8 rounded-lg shadow-xl modal-content max-w-md w-full">
+            <h2 class="text-2xl font-bold mb-4 text-white">About PurityScan Pro</h2>
+            <p class="text-light-gray mb-4">
+                PurityScan Pro v1.1<br><br>
+                This application identifies potentially harmful ingredients from product labels using advanced OCR and an online (simulated) ingredient safety database.
+            </p>
+            <p class="text-gray-500 text-sm mb-6">
+                Disclaimer: This tool provides general information and should not replace professional advice or detailed product research. Ingredient definitions are fetched from Wikipedia, and safety data from a simulated online source.
+            </p>
+            <button id="closeModalButton" class="btn-secondary px-4 py-2 rounded-lg float-right modal-close-btn">Close</button>
+        </div>
+    </div>
+
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const scanResultMessage = document.getElementById('scanResultMessage');
+        const harmfulIngredientsContent = document.getElementById('harmfulIngredientsContent');
+        // Removed rawTextContent variable
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const aboutButton = document.getElementById('aboutButton');
+        const mobileAboutButton = document.getElementById('mobileAboutButton');
+        const clearAllButton = document.getElementById('clearAllButton');
+        const dropArea = document.getElementById('dropArea');
+        const aboutModal = document.getElementById('aboutModal');
+        const closeModalButton = document.getElementById('closeModalButton');
+        // Removed copyTextButton variable
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+
+        const API_URL = 'http://127.0.0.1:5000/scan'; // Replace with your backend URL if deployed
+
+        // --- Event Listeners ---
+        aboutButton.addEventListener('click', () => {
+            aboutModal.classList.remove('hidden');
+        });
+        mobileAboutButton.addEventListener('click', () => {
+            aboutModal.classList.remove('hidden');
+            mobileMenu.classList.add('hidden');
+        });
+
+        closeModalButton.addEventListener('click', () => {
+            aboutModal.classList.add('hidden');
+        });
+
+        clearAllButton.addEventListener('click', clearAll);
+
+        // Removed copyTextButton event listener and related functions
+
+        // Drag and Drop Events
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            dropArea.classList.add('highlight');
+        }
+
+        function unhighlight() {
+            dropArea.classList.remove('highlight');
+        }
+
+        dropArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length > 0) {
+                imageInput.files = files;
+                previewImage({ target: imageInput });
+            }
+        }
+
+        // Mobile menu toggle
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close mobile menu when a nav link is clicked
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+
+        // --- Core Functions ---
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    resetResultsDisplay();
+                    uploadImage(file);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                clearAll();
+            }
+        }
+
+        async function uploadImage(file) {
+            const formData = new FormData();
+            formData.append('image', file);
+
+            setLoadingState(true, 'Uploading image...');
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                displayResults(data);
+
+            } catch (error) {
+                console.error('Error:', error);
+                scanResultMessage.textContent = `Error: ${error.message}`;
+                scanResultMessage.className = 'p-4 text-center text-lg font-bold rounded-lg shadow-md mb-6 min-h-[60px] flex items-center justify-center result-unsafe';
+                harmfulIngredientsContent.innerHTML = `<p class="text-red-500">Failed to get results: ${error.message}</p>`;
+            } finally {
+                setLoadingState(false);
+            }
+        }
+
+        function displayResults(data) {
+            // Update Scan Result Message
+            if (data.result_status === 'safe') {
+                scanResultMessage.textContent = data.message;
+                scanResultMessage.className = 'p-4 text-center text-lg font-bold rounded-lg shadow-md mb-6 min-h-[60px] flex items-center justify-center result-safe';
+            } else if (data.result_status === 'unsafe') {
+                scanResultMessage.textContent = data.message;
+                scanResultMessage.className = 'p-4 text-center text-lg font-bold rounded-lg shadow-md mb-6 min-h-[60px] flex items-center justify-center result-unsafe';
+            } else if (data.result_status === 'no_text_detected') {
+                 scanResultMessage.textContent = data.message;
+                 scanResultMessage.className = 'p-4 text-center text-lg font-bold rounded-lg shadow-md mb-6 min-h-[60px] flex items-center justify-center result-no-text';
+            } else {
+                scanResultMessage.textContent = 'Unknown result status.';
+                scanResultMessage.className = 'p-4 text-center text-lg font-bold rounded-lg shadow-md mb-6 min-h-[60px] flex items-center justify-center bg-gray-700 text-white';
+            }
+
+            // Update Harmful Ingredients
+            harmfulIngredientsContent.innerHTML = ''; // Clear previous content
+            if (data.unsafe_ingredients && data.unsafe_ingredients.length > 0) {
+                data.unsafe_ingredients.forEach((ing, index) => {
+                    const ingElement = document.createElement('div');
+                    ingElement.className = 'mb-4 p-3 border border-red-800 rounded-md bg-red-900 bg-opacity-30 cursor-pointer hover:bg-red-800 hover:bg-opacity-50 transition-colors duration-200';
+                    ingElement.onclick = () => showIngredientDetailsModal(ing); // Make it clickable to open modal
+
+                    let detailsHtml = '';
+                    if (ing.details) {
+                        for (const key in ing.details) {
+                            if (key !== 'source' && key !== 'risk_level') {
+                                detailsHtml += `<p class="text-xs text-gray-300 capitalize">${key.replace('_', ' ')}: ${ing.details[key]}</p>`;
+                            }
+                        }
+                        if (ing.details.source) {
+                            detailsHtml += `<p class="text-xs text-gray-400">Source: ${ing.details.source}</p>`;
+                        }
+                        if (ing.details.risk_level) {
+                            detailsHtml += `<p class="text-xs text-gray-400">Risk Level: ${ing.details.risk_level}</p>`;
+                        }
+                    }
+
+                    ingElement.innerHTML = `
+                        <h4 class="text-md font-semibold text-red-400">${index + 1}. ${ing.name}</h4>
+                        <p class="text-sm text-red-300 italic">Reason: ${ing.reason}</p>
+                        <p class="text-sm text-gray-300 mt-1">Wikipedia: ${ing.wikipedia_definition}</p>
+                        ${detailsHtml ? `<div class="mt-2 pt-2 border-t border-red-900">${detailsHtml}</div>` : ''}
+                    `;
+                    harmfulIngredientsContent.appendChild(ingElement);
+                });
+                // Expand harmful ingredients section if found
+                toggleSection('harmfulIngredientsContent', true);
+            } else {
+                harmfulIngredientsContent.innerHTML = '<p class="text-light-gray">No potentially harmful ingredients were identified based on our database.</p>';
+            }
+
+            // Removed rawTextContent update
+            // Removed copyTextButton visibility logic
+        }
+
+        function setLoadingState(isLoading, message = 'Processing...') {
+            if (isLoading) {
+                loadingIndicator.classList.remove('hidden');
+                scanResultMessage.textContent = message;
+                scanResultMessage.className = 'p-4 text-center text-lg font-bold rounded-lg shadow-md mb-6 min-h-[60px] flex items-center justify-center text-gray-600 bg-gray-100';
+                imageInput.disabled = true;
+                dropArea.classList.add('pointer-events-none');
+                clearAllButton.disabled = true;
+                aboutButton.disabled = true;
+                mobileAboutButton.disabled = true;
+            } else {
+                loadingIndicator.classList.add('hidden');
+                imageInput.disabled = false;
+                dropArea.classList.remove('pointer-events-none');
+                clearAllButton.disabled = false;
+                aboutButton.disabled = false;
+                mobileAboutButton.disabled = false;
+            }
+        }
+
+        function clearAll() {
+            imageInput.value = '';
+            imagePreview.src = "https://placehold.co/250x250/333333/FFFFFF?text=Image+Preview";
+            scanResultMessage.textContent = 'Upload an image to get started!';
+            scanResultMessage.className = 'p-4 text-center text-lg font-bold rounded-lg shadow-md mb-6 min-h-[60px] flex items-center justify-center bg-gray-700 text-white';
+            harmfulIngredientsContent.innerHTML = '<p class="text-light-gray">No harmful ingredients identified yet.</p>';
+            // Removed rawTextContent clear
+            loadingIndicator.classList.add('hidden');
+            // Removed copyTextButton hide
+            toggleSection('harmfulIngredientsContent', false);
+            // Removed rawTextContent toggle
+        }
+
+        function resetResultsDisplay() {
+            scanResultMessage.textContent = 'Processing...';
+            scanResultMessage.className = 'p-4 text-center text-lg font-bold rounded-lg shadow-md mb-6 min-h-[60px] flex items-center justify-center text-gray-600 bg-gray-100';
+            harmfulIngredientsContent.innerHTML = '<p class="text-light-gray">No harmful ingredients identified yet.</p>';
+            // Removed rawTextContent reset
+            loadingIndicator.classList.remove('hidden');
+            // Removed copyTextButton hide
+            toggleSection('harmfulIngredientsContent', false);
+            // Removed rawTextContent toggle
+        }
+
+        function toggleSection(contentId, forceState = null) {
+            const content = document.getElementById(contentId);
+            const icon = document.getElementById(contentId.replace('Content', 'ToggleIcon'));
+
+            if (forceState !== null) {
+                if (forceState) {
+                    content.classList.remove('hidden');
+                    if (icon) icon.textContent = '-';
+                } else {
+                    content.classList.add('hidden');
+                    if (icon) icon.textContent = '+';
+                }
+            } else {
+                content.classList.toggle('hidden');
+                if (icon) {
+                    if (content.classList.contains('hidden')) {
+                        icon.textContent = '+';
+                    } else {
+                        icon.textContent = '-';
+                    }
+                }
+            }
+        }
+
+        // --- Ingredient Details Modal ---
+        const ingredientDetailsModal = document.createElement('div');
+        ingredientDetailsModal.id = 'ingredientDetailsModal';
+        ingredientDetailsModal.className = 'fixed inset-0 flex items-center justify-center modal-overlay hidden';
+        document.body.appendChild(ingredientDetailsModal);
+
+        function showIngredientDetailsModal(ingredient) {
+            let detailsHtml = '';
+            if (ingredient.details) {
+                for (const key in ingredient.details) {
+                    if (key !== 'source' && key !== 'risk_level') {
+                        detailsHtml += `<p class="text-sm text-gray-300 capitalize mb-1">${key.replace('_', ' ')}: <span class="font-normal">${ingredient.details[key]}</span></p>`;
+                    }
+                }
+                if (ingredient.details.source) {
+                    detailsHtml += `<p class="text-sm text-gray-400 mb-1">Source: <span class="font-normal">${ingredient.details.source}</span></p>`;
+                }
+                if (ingredient.details.risk_level) {
+                    detailsHtml += `<p class="text-sm text-gray-400 mb-1">Risk Level: <span class="font-normal">${ingredient.details.risk_level}</span></p>`;
+                }
+            }
+
+            ingredientDetailsModal.innerHTML = `
+                <div class="bg-secondary-bg p-8 rounded-lg shadow-xl modal-content max-w-lg w-full">
+                    <h2 class="text-2xl font-bold mb-4 text-white">${ingredient.name} Details</h2>
+                    <p class="text-light-gray mb-2"><span class="font-semibold">Reason:</span> ${ingredient.reason}</p>
+                    <p class="text-light-gray mb-4"><span class="font-semibold">Wikipedia:</span> ${ingredient.wikipedia_definition}</p>
+                    ${detailsHtml ? `<div class="mt-4 pt-4 border-t border-gray-700">${detailsHtml}</div>` : ''}
+                    <button id="closeIngredientDetailsModalButton" class="btn-secondary px-4 py-2 rounded-lg float-right mt-6">Close</button>
+                </div>
+            `;
+            ingredientDetailsModal.classList.remove('hidden');
+
+            document.getElementById('closeIngredientDetailsModalButton').addEventListener('click', () => {
+                ingredientDetailsModal.classList.add('hidden');
+            });
+        }
+
+
+        // --- Initial Load Animations ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // JavaScript for scroll animations
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, {
+                threshold: 0.1 // Trigger when 10% of the element is visible
+            });
+
+            const targets = document.querySelectorAll('.scroll-target');
+            targets.forEach(target => {
+                observer.observe(target);
+            });
+
+            // Mobile menu toggle
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Close mobile menu when a nav link is clicked
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+
+            // Initial state: ensure sections are collapsed
+            toggleSection('harmfulIngredientsContent', false);
+            // Removed rawTextContent toggle
+        });
+    </script>
+
+</body>
+</html>
