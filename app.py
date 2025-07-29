@@ -282,3 +282,4 @@ if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
     # The database connection is now managed per-request by get_db and close_db
     # No need for a global CONN.close() here as it's handled by teardown_appcontext.
+
