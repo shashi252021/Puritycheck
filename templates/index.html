@@ -30,7 +30,7 @@
 
         /* Hero Section Background */
         .hero-section {
-            background: linear-gradient(rgba(18, 18, 18, 0.85), rgba(18, 18, 18, 0.85)), url('https://images.unsplash.com/photo-1543886583-00d9226d7f95?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'); /* Previous image of various spices/ingredients */
+            background: linear-gradient(rgba(18, 18, 18, 0.85), rgba(18, 18, 0.85)), url('https://images.unsplash.com/photo-1543886583-00d9226d7f95?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'); /* Previous image of various spices/ingredients */
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -267,10 +267,10 @@
                 <!-- Step 2 -->
                 <div class="feature-card p-8 rounded-xl scroll-target" style="transition-delay: 200ms;">
                     <div class="accent-bg w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <i class="fas fa-search text-3xl text-white"></i>
+                        <i class="fas fa-brain text-3xl text-white"></i> <!-- Changed icon to brain for processing -->
                     </div>
-                    <h4 class="text-2xl font-semibold mb-2">2. AI Analysis</h4>
-                    <p class="text-light-gray">Our AI extracts and cross-references ingredients with a powerful database.</p>
+                    <h4 class="text-2xl font-semibold mb-2">2. Image Processing</h4> <!-- Changed text here -->
+                    <p class="text-light-gray">Our system processes the image to extract all ingredient text.</p> <!-- Updated description -->
                 </div>
                 <!-- Step 3 -->
                 <div class="feature-card p-8 rounded-xl scroll-target" style="transition-delay: 400ms;">
@@ -359,7 +359,7 @@
                     <!-- Harmful Ingredients Section (Collapsible) -->
                     <div class="flex-grow border border-gray-700 rounded-lg"> <!-- Changed flex-grow to fill remaining space -->
                         <button class="w-full text-left p-3 bg-gray-800 font-semibold text-white rounded-t-lg flex justify-between items-center" onclick="toggleSection('harmfulIngredientsContent')">
-                            <span>Identified Potentially Harmful Ingredients</span>
+                            <span>Information about Harmful Ingredients</span> <!-- Changed text here -->
                             <span id="harmfulIngredientsToggleIcon" class="text-xl">+</span>
                         </button>
                         <div id="harmfulIngredientsContent" class="hidden custom-scrollbar p-4 overflow-y-auto h-96 lg:h-auto max-h-[calc(100vh-300px)] bg-gray-900"> <!-- Adjusted height/max-height -->
@@ -386,10 +386,10 @@
     <!-- Footer -->
     <footer class="secondary-bg py-8 text-center text-light-gray">
         <div class="flex justify-center gap-6">
-            <a href="https://github.com/Venky8249" target="_blank" rel="noopener noreferrer" class="text-light-gray hover:text-white transition-colors duration-300">
+            <a href="https://github.com/Shashi252021" target="_blank" rel="noopener noreferrer" class="text-light-gray hover:text-white transition-colors duration-300">
                 <i class="fab fa-github text-2xl"></i>
             </a>
-            <a href="https://www.linkedin.com/in/venkatesh-gummadidala-923419291/?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noopener noreferrer" class="text-light-gray hover:text-white transition-colors duration-300">
+            <a href="https://www.linkedin.com/in/shashankduvva/" target="_blank" rel="noopener noreferrer" class="text-light-gray hover:text-white transition-colors duration-300">
                 <i class="fab fa-linkedin text-2xl"></i>
             </a>
         </div>
@@ -434,9 +434,9 @@
         aboutButton.addEventListener('click', () => {
             aboutModal.classList.remove('hidden');
         });
-        mobileAboutButton.addEventListener('click', () => {
+        mobileAboutButton.addEventListener('click', () => { // Event listener for mobile about button
             aboutModal.classList.remove('hidden');
-            mobileMenu.classList.add('hidden');
+            mobileMenu.classList.add('hidden'); // Hide mobile menu when modal opens
         });
 
         closeModalButton.addEventListener('click', () => {
